@@ -17,7 +17,7 @@ movies['combined_features'] = (
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(movies['combined_features'])
 
-#this will comput the simularity matrix
+#this will comput the sImularity matrix
 cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
 
@@ -36,18 +36,18 @@ def get_recommendations(title, num_recommendations=5):
     #this will compute similarity scores
     sim_scores = list(enumerate(cosine_sim[idx]))
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-    sim_scores = sim_scores[1:num_recommendations + 1]  # Skip the first match (itself)
+    sim_scores = sim_scores[1:num_recommendations + 1]  #if it is the first match then skip it 
 
     #this will return the indices of similar movies
     movie_indices = [i[0] for i in sim_scores]
 
-    #this will return the recommended movies as a DataFrame
-    return movies.iloc[movie_indices][['Movie Name', 'Year', 'Genre', 'imdbRating']].reset_index(drop=True)
+    #this will return the recommended movies as a df
+    return movies.iloc[movie_indices][['Movie Name', 'Year', 'Genre', 'imdbRating', 'Tomatometer Score']].reset_index(drop=True)
 
 
 @app.route('/')
 def home():
-    #sets the options
+    #set the options
     genres = ['Action', 'Adventure', 'Animation', 'Biography', 'Comedy', 'Crime', 'Documentary', 'Drama', 
               'Family', 'Fantasy', 'Film-Noir', 'History', 'Horror', 'Music', 'Musical', 'Mystery', 'News', 
               'Romance', 'Sci-Fi', 'Short', 'Sport', 'Thriller', 'War', 'Western']
@@ -95,7 +95,7 @@ def recommend():
     
     recommendations_df = get_recommendations(movie_name)
 
-    #this will make sure that we only convert only if it’s a DataFrame
+    #this will make sure that we only convert only if it’s a df
     recommendations = (
         recommendations_df.to_dict('records') if not recommendations_df.empty else []
     )
