@@ -2,10 +2,11 @@ from flask import Flask, request, render_template
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
+import requests
 
 app = Flask(__name__)
 
-movies = pd.read_csv('My_Movie_dataset(cleaned).csv')
+movies = pd.read_csv('My_Movie_dataset(cleaned1)_utf8.csv')
 
 movies['combined_features'] = (
     movies['Genre'] + ' ' +
@@ -68,7 +69,30 @@ def recommend():
 
     return render_template('recommendations.html', recommendations=recommendations, movie_name=movie_name)
 
+@app.route('/movie/<movie_name>')
+def movie_details(movie_name):
+    movie = movies[movies['Movie Name'] == movie_name].iloc[0]
+    poster_url = get_movie_poster(movie_name)
+    return render_template('movie_details.html', movie=movie, poster_url=poster_url)
 
+
+
+
+posters = pd.read_csv('posters.csv')
+
+def get_movie_poster(movie_name):
+    # Search for the movie in the posters dataset
+    row = posters[posters['Movie'].str.lower() == movie_name.lower()]
+    if not row.empty:
+        tmdb_id = row['TMDb ID'].values[0]
+        # Retrieve poster from TMDB API
+        api_key = '9d7c2e7cfa61f948baee3ebfc456c82b'  # Replace with your TMDB API key
+        url = f"https://api.themoviedb.org/3/movie/{tmdb_id}?api_key={api_key}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return f"https://image.tmdb.org/t/p/w500{data['poster_path']}"
+    return None
 
 
 if __name__ == '__main__':

@@ -11,8 +11,9 @@
             <ul class="list-group">
                 {% for movie in recommendations %}
                 <li class="list-group-item">
-                    <strong>{{ movie['Movie Name'] }}</strong> ({{ movie['Year'] }})
-                    - Genre: {{ movie['Genre'] }} | IMDb: {{ movie['imdbRating'] }}
+                    <a href="/movie/{{ movie['Movie Name'] }}"><strong>{{ movie['Movie Name'] }}</strong></a>
+                    ({{ movie['Year'] }}) - Genre: {{ movie['Genre'] }} |
+                    Rotten Tomatoes: {{ movie['Tomatometer Score'] }} | IMDb: {{ movie['imdbRating'] }}
                 </li>
                 {% endfor %}
             </ul>
